@@ -40,7 +40,7 @@ router.get("/", async function (req, res, next) {
  *
  * Authorization required: none
  **/
-
+//TODO: What about jobs?
 router.get("/:handle", async function (req, res, next) {
   try {
     const company = await Company.get(req.params.handle);
@@ -59,6 +59,7 @@ router.get("/:handle", async function (req, res, next) {
  * Authorization required: admin
  **/
 
+//TODO: only admin can make create company
 router.post("/", ensureLoggedIn, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, companyNewSchema);
@@ -84,6 +85,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  *
  * Authorization required: admin
  **/
+//TODO: only admin can edit  company
 
 router.patch("/:handle", ensureLoggedIn, async function (req, res, next) {
   try {
@@ -104,7 +106,7 @@ router.patch("/:handle", ensureLoggedIn, async function (req, res, next) {
  *
  * Authorization: admin
  **/
-
+//TODO: only admin can delete company
 router.delete("/:handle", ensureLoggedIn, async function (req, res, next) {
   try {
     await Company.remove(req.params.handle);

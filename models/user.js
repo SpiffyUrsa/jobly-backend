@@ -18,7 +18,7 @@ class User {
    *
    * Throws UnauthorizedError is user not found or wrong password.
    **/
-
+//Note : deleting password for security purposes
   static async authenticate(username, password) {
     // try to find the user first
     const result = await db.query(
