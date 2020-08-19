@@ -16,6 +16,7 @@ afterAll(commonAfterAll);
 
 
 describe("findAll", function () {
+  
   test("all", async function () {
     let companies = await Company.findAll();
     expect(companies).toEqual([
@@ -24,8 +25,41 @@ describe("findAll", function () {
       { handle: "c3", name: "C3" },
     ]);
   });
-});
 
+  test("filter by the name containing 1 inside of it.", async function () {
+    let companies = await Company.findAll("1");
+
+    expect(companies).toEqual([
+      { handle: "c1", name: "C1" }
+    ])
+  });
+
+  test("filter by name containing c and having min employees of 2.", async function () {
+    let companies = await Company.findAll("c", 2);
+
+    expect(companies).toEqual([
+      { handle: "c2", name: "C2" },
+      { handle: "c3", name: "C3" },
+    ]);
+  });
+
+  test("filter by values where nothing is matched.", async function () {
+    let companies = await Company.findAll("ABCD");
+    
+    expect(companies).toEqual([]);
+  });
+
+  test("Throws error when the minEmployees is greater than the maxEmployees", async function () {
+
+   
+    await expect(Company.findAll(undefined, 3, 2))
+				.rejects
+				.toThrow("Bad Request: minEmployees is greater than maxEmployees.");
+  })
+
+
+
+});
 
 describe("get", function () {
   test("succeeds", async function () {

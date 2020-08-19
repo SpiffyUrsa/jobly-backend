@@ -1,4 +1,4 @@
-// THIS NEEDS SOME GREAT DOCUMENTATION.
+const { BadRequestError } = require("../expressError");
 
 /** This function accepts an object that contains the data that we want to update with
  * takes each key and turn it to sql string equal to its value
@@ -17,5 +17,56 @@ function sqlForPartialUpdate(dataToUpdate) {
   };
 }
 
-module.exports = { sqlForPartialUpdate };
-// col(name) $1
+/** 
+ * This function accepts query string values that can be optional and returns an object
+ *  With a query string containing the filtering parameters and the values of the filters.
+ */
+
+function sqlForFilteringByCols(nameLike, minEmployees, maxEmployees) {
+  
+  if (minEmployees > maxEmployees) {
+    throw new BadRequestError("Bad Request: minEmployees is greater than maxEmployees.");
+  }
+
+  let filtersNameAndVals = [
+    ["nameLike", nameLike],
+    ["minEmployees", minEmployees],
+    ["maxEmployees", maxEmployees]
+  ];
+
+  filtersNameAndVals = filtersNameAndVals.filter(filter => filter[1] !== undefined);
+
+  let filtersQueries = filtersNameAndVals.map((filter, ind) => {
+    let filterName = filter[0];
+
+    if (filterName === "nameLike") {
+      return `name ILIKE $${ind + 1}`;
+    } else if (filterName === "minEmployees") {
+      return `num_employees >= $${ind + 1}`;
+    } else if (filterName === "maxEmployees") {
+      return `num_employees <= $${ind + 1}`;
+    }
+  });
+
+  let combinedFiltersQuery = filtersQueries.join(" AND ");
+
+  let filterValues = filtersNameAndVals.map(filter => {
+    if (filter[0] === "nameLike") {
+      // TODO: Ask why we do not need the single quotes around the pattern here.
+      filter[1] = "%" + filter[1] + "%";
+    }
+    return filter[1];
+  });
+
+  let dbQuery = `SELECT handle, name
+                  FROM companies 
+                  WHERE ` + combinedFiltersQuery + " ORDER BY name";
+  return { dbQuery, filterValues };
+}
+
+
+
+
+module.exports = { sqlForPartialUpdate, sqlForFilteringByCols };
+
+

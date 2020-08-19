@@ -26,7 +26,11 @@ const router = new express.Router();
 
 router.get("/", async function (req, res, next) {
   try {
-    const companies = await Company.findAll();
+    
+    const { nameLike, minEmployees, maxEmployees } = req.query;
+
+    const companies = await Company.findAll(nameLike, minEmployees, maxEmployees);
+    
     return res.json({ companies });
   } catch (err) {
     return next(err);

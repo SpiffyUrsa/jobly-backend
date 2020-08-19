@@ -2,21 +2,29 @@
 
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { sqlForPartialUpdate } = require("../helpers/sql");
+const { sqlForPartialUpdate, sqlForFilteringByCols } = require("../helpers/sql");
 
 /** Related functions for companies. */
 
 class Company {
-  /** Find all companies.
+  /** Find all companies. Allows for companies to be filtered by specific conditions.
    *
    * Returns [{ handle, name }, ...] (empty list if none found)
    * */
 
-  static async findAll() {
-    const companiesRes = await db.query(
+  static async findAll(nameLike, minEmployees, maxEmployees) {
+    let companiesRes;
+    if (nameLike || minEmployees || maxEmployees) {
+      
+      const {dbQuery, filterValues} = sqlForFilteringByCols(nameLike, minEmployees, maxEmployees);
+      companiesRes = await db.query(dbQuery, filterValues);
+      
+    } else {
+      companiesRes = await db.query(
         `SELECT handle, name
-           FROM companies
-           ORDER BY name`);
+             FROM companies
+             ORDER BY name`);
+    }
     return companiesRes.rows;
   }
 
@@ -29,10 +37,10 @@ class Company {
 
   static async get(handle) {
     const companyRes = await db.query(
-        `SELECT handle, name, num_employees, description, logo_url
+      `SELECT handle, name, num_employees, description, logo_url
            FROM companies
            WHERE handle = $1`,
-        [handle]);
+      [handle]);
 
     const company = companyRes.rows[0];
 
@@ -52,26 +60,26 @@ class Company {
 
   static async create({ handle, name, num_employees, description, logo_url }) {
     const duplicateCheck = await db.query(
-        `SELECT handle
+      `SELECT handle
            FROM companies
            WHERE handle = $1`,
-        [handle]);
+      [handle]);
 
     if (duplicateCheck.rows[0])
       throw new BadRequestError(`Duplicate company: ${handle}`);
 
     const result = await db.query(
-        `INSERT INTO companies
+      `INSERT INTO companies
            (handle, name, num_employees, description, logo_url)
            VALUES ($1, $2, $3, $4, $5)
            RETURNING handle, name, num_employees, description, logo_url`,
-        [
-          handle,
-          name,
-          num_employees,
-          description,
-          logo_url,
-        ],
+      [
+        handle,
+        name,
+        num_employees,
+        description,
+        logo_url,
+      ],
     );
     const company = result.rows[0];
 
@@ -119,11 +127,11 @@ class Company {
 
   static async remove(handle) {
     const result = await db.query(
-        `DELETE
+      `DELETE
            FROM companies
            WHERE handle = $1
            RETURNING handle`,
-        [handle]);
+      [handle]);
     const company = result.rows[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);

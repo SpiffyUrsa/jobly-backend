@@ -1,5 +1,5 @@
 "use strict";
-const {sqlForPartialUpdate} = require("./sql")
+const {sqlForPartialUpdate, sqlForFilteringByCols } = require("./sql")
 
 describe("sqlForPartialUpdate", function () {
   test("check if it returns valid output with valid input", function () {
@@ -18,3 +18,16 @@ describe("sqlForPartialUpdate", function () {
     });
   });
 });
+
+describe ("sqlForFilteringByCols", function () {
+  test("check if it returns valid output with valid input", function () {
+    const result = sqlForFilteringByCols("test", "1");
+
+    expect(result).toEqual({
+      dbQuery: `SELECT handle, name
+                  FROM companies 
+                  WHERE name ILIKE $1 AND num_employees >= $2 ORDER BY name`,
+      filterValues: ["%test%", "1"]
+    })
+  });
+})
