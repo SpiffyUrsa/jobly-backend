@@ -7,6 +7,8 @@ const {
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
+  testAdminToken,
+  testUserToken
 } = require("./_testCommon");
 
 beforeAll(commonBeforeAll);
@@ -84,6 +86,7 @@ describe("get", function () {
 });
 
 describe("create", function () {
+  
   test("succeeds", async function () {
     let company = await Company.create({
       handle: "test",
@@ -91,6 +94,7 @@ describe("create", function () {
       num_employees: 1,
       description: "Test Description",
       logo_url: "http://test.img",
+      _token:testAdminToken
     });
     expect(company).toEqual({
       handle: "test",
@@ -111,6 +115,23 @@ describe("create", function () {
         logo_url: "http://test.img",
       },
     ]);
+  });
+
+  test("fails", async function () {
+     let results = await Company.create({
+      handle: "test",
+      name: "Test",
+      num_employees: 1,
+      description: "Test Description",
+      logo_url: "http://test.img",
+      _token: testUserToken
+    })
+    console.log("result", results)
+    
+    // await expect(Company.findAll(undefined, 3, 2))
+    // .rejects
+    // .toThrow("Bad Request: minEmployees is greater than maxEmployees.");
+    
   });
 
   test("fails with dupe", async function () {

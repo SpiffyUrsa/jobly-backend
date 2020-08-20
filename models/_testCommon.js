@@ -1,8 +1,11 @@
 const bcrypt = require("bcrypt");
 
 const db = require("../db.js");
-const { BCRYPT_WORK_FACTOR } = require("../config");
+const { BCRYPT_WORK_FACTOR, SECRET_KEY } = require("../config");
+const {createToken} = require("../helpers/tokens")
 
+let testAdminToken
+let testUserToken
 
 async function commonBeforeAll() {
   // noinspection SqlWithoutWhere
@@ -19,6 +22,7 @@ async function commonBeforeAll() {
   let testPasswords = [
     await bcrypt.hash("password", BCRYPT_WORK_FACTOR),
     await bcrypt.hash("password2", BCRYPT_WORK_FACTOR),
+    await bcrypt.hash("password3", BCRYPT_WORK_FACTOR)
   ];
 
   await db.query(`
@@ -26,10 +30,17 @@ async function commonBeforeAll() {
                       password,
                       first_name,
                       last_name,
-                      email)
-    VALUES ('test', $1, 'Test', 'Tester', 'test@test.com'),
-           ('test2', $2, 'Test2', 'Tester2', 'test2@test.com')
+                      email,
+                      is_admin)
+    VALUES ('test', $1, 'Test', 'Tester', 'test@test.com', false),
+           ('test2', $2, 'Test2', 'Tester2', 'test2@test.com', false),
+           ('admin', $3, 'admin', 'admin', 'admin@test.com', true)
   `, [...testPasswords]);
+  const testAdmin = { username : "admin", is_admin : true}
+  const testUser = { username : "test", is_admin:false}
+
+   testAdminToken = createToken(testAdmin)
+   testUserToken = createToken(testUser)
 }
 
 async function commonBeforeEach() {
@@ -50,4 +61,6 @@ module.exports = {
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
+  testAdminToken,
+  testUserToken
 };
