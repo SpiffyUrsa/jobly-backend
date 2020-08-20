@@ -40,6 +40,7 @@ function authenticateJWT(req, res, next) {
 // an error: this makes this easily unit-tested.
 
 function _ensureLoggedIn(req, res) {
+  console.log("log in", res.locals)
   if (!res.locals.user) throw new UnauthorizedError();
 }
 
@@ -61,11 +62,15 @@ function ensureLoggedIn(req, res, next) {
 
  function ensureAdmin(req, res, next){
    try {
-     console.log("res.locals", res.locals.user)
-     if(res.locals.user.is_admin) return next()
-    else throw new UnauthorizedError()
+     console.log('inside ensure admin', req.body)
+     _ensureLoggedIn(req, res)
+     if(res.locals.user.is_admin === true) {
+       return next()
+      } else {
+        throw new UnauthorizedError()
+      }
    } catch(err) {
-     next(err)
+     return next(err)
    }
  }
 

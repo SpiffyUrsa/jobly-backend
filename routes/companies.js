@@ -11,6 +11,7 @@ const Company = require("../models/Company");
 
 const companyNewSchema = require("../schemas/companyNew.json");
 const companyUpdateSchema = require("../schemas/companyUpdate.json");
+const getCompaniesSchema = require("../schemas/getCompanies.json")
 
 const router = new express.Router();
 
@@ -26,6 +27,12 @@ const router = new express.Router();
 
 router.get("/", async function (req, res, next) {
   try {
+    const validator = jsonschema.validate(req.body, getCompaniesSchema);
+
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
     
     const { nameLike, minEmployees, maxEmployees } = req.query;
 
@@ -64,8 +71,9 @@ router.get("/:handle", async function (req, res, next) {
  **/
 
 //TODO: only admin can make create company
-router.post("/", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
+router.post("/", ensureAdmin, async function (req, res, next) {
   try {
+    console.log("inside create route")
     const validator = jsonschema.validate(req.body, companyNewSchema);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
@@ -91,7 +99,7 @@ router.post("/", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
  **/
 //TODO: only admin can edit  company
 
-router.patch("/:handle", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
+router.patch("/:handle", ensureAdmin, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, companyUpdateSchema);
     if (!validator.valid) {
@@ -111,7 +119,7 @@ router.patch("/:handle", ensureLoggedIn, ensureAdmin, async function (req, res, 
  * Authorization: admin
  **/
 //TODO: only admin can delete company
-router.delete("/:handle", ensureLoggedIn, ensureAdmin, async function (req, res, next) {
+router.delete("/:handle", ensureAdmin, async function (req, res, next) {
   try {
     await Company.remove(req.params.handle);
     return res.json({ deleted: req.params.handle });
@@ -120,5 +128,5 @@ router.delete("/:handle", ensureLoggedIn, ensureAdmin, async function (req, res,
   }
 });
 
-
+//TODO: ensureLOGGEDIN
 module.exports = router;

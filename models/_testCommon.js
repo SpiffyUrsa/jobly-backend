@@ -36,11 +36,7 @@ async function commonBeforeAll() {
            ('test2', $2, 'Test2', 'Tester2', 'test2@test.com', false),
            ('admin', $3, 'admin', 'admin', 'admin@test.com', true)
   `, [...testPasswords]);
-  const testAdmin = { username : "admin", is_admin : true}
-  const testUser = { username : "test", is_admin:false}
 
-   testAdminToken = createToken(testAdmin)
-   testUserToken = createToken(testUser)
 }
 
 async function commonBeforeEach() {

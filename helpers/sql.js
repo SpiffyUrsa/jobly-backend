@@ -9,7 +9,7 @@ const { BadRequestError } = require("../expressError");
 
 function sqlForPartialUpdate(dataToUpdate) {
   const cols = Object.keys(dataToUpdate).map(
-      (col, idx) => `${col}=$${idx + 1}`);
+    (col, idx) => `${col}=$${idx + 1}`);
 
   return {
     setCols: cols.join(", "),
@@ -23,7 +23,7 @@ function sqlForPartialUpdate(dataToUpdate) {
  */
 
 function sqlForFilteringByCols(nameLike, minEmployees, maxEmployees) {
-  
+
   if (minEmployees > maxEmployees) {
     throw new BadRequestError("Bad Request: minEmployees is greater than maxEmployees.");
   }
@@ -48,15 +48,17 @@ function sqlForFilteringByCols(nameLike, minEmployees, maxEmployees) {
     }
   });
 
-  let combinedFiltersQuery = filtersQueries.join(" AND ");
-
   let filterValues = filtersNameAndVals.map(filter => {
-    if (filter[0] === "nameLike") {
-      // TODO: Ask why we do not need the single quotes around the pattern here.
-      filter[1] = "%" + filter[1] + "%";
+    let name = filter[0]
+    let value = filter[1]
+
+    if (name === "nameLike") {
+      value = "%" + value + "%";
     }
-    return filter[1];
+    return value;
   });
+
+  let combinedFiltersQuery = filtersQueries.join(" AND ");
 
   let dbQuery = `SELECT handle, name
                   FROM companies 
