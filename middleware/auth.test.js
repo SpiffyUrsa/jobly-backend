@@ -57,7 +57,7 @@ describe("_ensureLoggedIn", function () {
   });
 
   test("failure", function () {
-    expect.assertions = 1;
+    expect.assertions(1);
     const req = {};
     const res = { locals: {} };
     try {
@@ -79,7 +79,7 @@ describe("ensureAdmin", function () {
   });
 
   test("failure with user", function () {
-    expect.assertions = 1;
+    expect.assertions(1);
     const req = {body: { _token: testJwt }};
     const res = { locals: {user : { username: "test", is_admin: false }} };
     try {
@@ -90,7 +90,7 @@ describe("ensureAdmin", function () {
   });
 
   test("failure with empty locals", function () {
-    expect.assertions = 1;
+    expect.assertions(1);
     const req = {};
     const res = { locals: {} };
     try {
@@ -101,7 +101,7 @@ describe("ensureAdmin", function () {
   });
 
   test("failure with invalid value for is_admin", function () {
-    expect.assertions = 1;
+    expect.assertions(1);
     const req = {};
     const res = { locals: {user : { username: "test", is_admin: "no" }} };
     try {
