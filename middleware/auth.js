@@ -22,7 +22,7 @@ function authenticateJWT(req, res, next) {
     const token = req.body._token;
     // The token is not needed after this middleware, so remove
     delete req.body._token;
-    console.log("setting users", jwt.verify(token, SECRET_KEY))
+
     if (token) res.locals.user = jwt.verify(token, SECRET_KEY);
     return next();
   } catch (err) {
@@ -40,7 +40,7 @@ function authenticateJWT(req, res, next) {
 // an error: this makes this easily unit-tested.
 
 function _ensureLoggedIn(req, res) {
-  console.log("log in", res.locals)
+
   if (!res.locals.user) throw new UnauthorizedError();
 }
 
@@ -60,19 +60,18 @@ function ensureLoggedIn(req, res, next) {
  * And throws UnauthorizedError if the user is not admin
  */
 
- function ensureAdmin(req, res, next){
-   try {
-     console.log('inside ensure admin', req.body)
-     _ensureLoggedIn(req, res)
-     if(res.locals.user.is_admin === true) {
-       return next()
-      } else {
-        throw new UnauthorizedError()
-      }
-   } catch(err) {
-     return next(err)
-   }
- }
+function ensureAdmin(req, res, next) {
+  try {
+    _ensureLoggedIn(req, res)
+    if (res.locals.user.is_admin === true) {
+      return next()
+    } else {
+      throw new UnauthorizedError()
+    }
+  } catch (err) {
+    return next(err)
+  }
+}
 
 module.exports = {
   authenticateJWT,

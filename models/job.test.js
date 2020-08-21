@@ -88,7 +88,7 @@ describe("create", function () {
 			company_handle: "c1"
 		});
 		expect(job).toEqual({
-			id: 4,
+			id: expect.any(Number),
 			title: "job4",
 			salary: 14000,
 			equity: "0.5",
@@ -96,10 +96,10 @@ describe("create", function () {
 		});
 		const result = await db.query(`SELECT *
                                    FROM jobs
-                                   WHERE id = 4`);
+                                   WHERE id = ${job.id}`);
 		expect(result.rows).toEqual([
 			{
-				id: 4,
+				id: job.id,
 				title: "job4",
 				salary: 14000,
 				equity: "0.5",

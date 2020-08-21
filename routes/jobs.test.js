@@ -12,9 +12,7 @@ const {
   commonAfterAll,
   u1Token,
   adminToken,
-  job1,
-  job2,
-  job3
+  jobs
 } = require("./_testCommon");
 
 beforeAll(commonBeforeAll);
@@ -22,16 +20,17 @@ beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
 
+
 describe("POST /jobs", function () {
   test("users cannot create a new job if they are not admin", async function () {
-    console.log("jobs", job1, job2, job3)
+
     const resp = await request(app)
       .post("/jobs")
       .send({
         title: "job3",
-        salary:10000,
-        equity:0.1,
-        company_handle : "c1",
+        salary: 10000,
+        equity: 0.1,
+        company_handle: "c1",
         _token: u1Token,
       });
     expect(resp.statusCode).toEqual(401);
@@ -42,9 +41,9 @@ describe("POST /jobs", function () {
       .post("/jobs")
       .send({
         title: "job4",
-        salary:10000,
-        equity:0.1,
-        company_handle : "c1",
+        salary: 10000,
+        equity: 0.1,
+        company_handle: "c1",
         _token: adminToken,
       });
     expect(resp.statusCode).toEqual(201);
@@ -52,9 +51,9 @@ describe("POST /jobs", function () {
       job: {
         id: expect.any(Number),
         title: "job4",
-        salary:10000,
-        equity:"0.1",
-        company_handle : "c1"
+        salary: 10000,
+        equity: "0.1",
+        company_handle: "c1"
       },
     });
   })
@@ -64,8 +63,8 @@ describe("POST /jobs", function () {
       .post("/jobs")
       .send({
         title: "job3",
-        salary:10000,
-        equity:0.1,
+        salary: 10000,
+        equity: 0.1,
       });
     expect(resp.statusCode).toEqual(401);
   });
@@ -74,8 +73,8 @@ describe("POST /jobs", function () {
     const resp = await request(app)
       .post("/jobs")
       .send({
-        salary:10000,
-        equity:0.1,
+        salary: 10000,
+        equity: 0.1,
         _token: adminToken,
       });
     expect(resp.statusCode).toEqual(400);
@@ -86,8 +85,8 @@ describe("POST /jobs", function () {
       .post("/jobs")
       .send({
         title: "job3",
-        salary:"10000",
-        equity:0.1,
+        salary: "10000",
+        equity: 0.1,
         _token: adminToken,
       });
     expect(resp.statusCode).toEqual(400);
@@ -95,16 +94,16 @@ describe("POST /jobs", function () {
 
 });
 
+
 describe("GET /jobs", function () {
   test("ok for anon", async function () {
     const resp = await request(app).get("/jobs");
     expect(resp.body).toEqual({
       jobs:
         [
-          job1, job2, job3
-          // {id:1, title: "job1", salary:10000,equity:"0.5", company_handle : "c1"},
-          // {id:2, title: "job2", salary:11000,equity:"0.4", company_handle : "c2"},
-          // {id:3, title: "job3", salary:12000,equity:"0.3", company_handle : "c3"}
+          { id: expect.any(Number), title: "job1", salary: 10000, equity: "0.5", company_handle: "c1" },
+          { id: expect.any(Number), title: "job2", salary: 11000, equity: "0.4", company_handle: "c2" },
+          { id: expect.any(Number), title: "job3", salary: 12000, equity: "0.3", company_handle: "c3" }
         ],
     });
   });
@@ -124,15 +123,15 @@ describe("GET /jobs", function () {
 
 describe("GET /jobs/:id", function () {
   test("ok for anon", async function () {
-    const resp = await request(app).get(`/jobs/${job1.id}`);
-    console.log("get jobs/",resp.body)
+    const resp = await request(app).get(`/jobs/${jobs[0].id}`);
+    
     expect(resp.body).toEqual({
       job: {
-        id:job1.id,
+        id: jobs[0].id,
         title: "job1",
-        salary:10000,
-        equity:"0.5",
-        company_handle : "c1"
+        salary: 10000,
+        equity: "0.5",
+        company_handle: "c1"
       },
     });
   });
@@ -147,11 +146,11 @@ describe("GET /jobs/:id", function () {
 describe("PATCH /jobs/:id", function () {
   test("user cannot update job if not admin", async function () {
     const resp = await request(app)
-      .patch(`/jobs/${job2.id}`)
+      .patch(`/jobs/${jobs[1].id}`)
       .send({
-        title : "newJob",
-        salary:10000,
-        equity:0.1,
+        title: "newJob",
+        salary: 10000,
+        equity: 0.1,
         _token: u1Token,
       });
     expect(resp.statusCode).toEqual(401);
@@ -159,38 +158,38 @@ describe("PATCH /jobs/:id", function () {
 
   test("admin update job", async function () {
     const resp = await request(app)
-      .patch(`/jobs/${job1.id}`)
+      .patch(`/jobs/${jobs[0].id}`)
       .send({
         title: "newJob1",
-        salary:10100,
-        equity:0.7,
+        salary: 10100,
+        equity: 0.7,
         _token: adminToken,
       });
     expect(resp.body).toEqual({
       job: {
-        id: job1.id,
+        id: jobs[0].id,
         title: "newJob1",
-        salary:10100,
-        equity:"0.7",
-        company_handle : "c1"
+        salary: 10100,
+        equity: "0.7",
+        company_handle: "c1"
       },
     });
   });
 
   test("fails for anon", async function () {
     const resp = await request(app)
-      .patch(`/jobs/${job2.id}`)
+      .patch(`/jobs/${jobs[1].id}`)
       .send({
-       title:"newJob2"
+        title: "newJob2"
       });
     expect(resp.statusCode).toEqual(401);
   });
 
   test("fails on handle change attempt", async function () {
     const resp = await request(app)
-      .patch(`/jobs/${job2.id}`)
+      .patch(`/jobs/${jobs[1].id}`)
       .send({
-        company_handle:"newComp",
+        company_handle: "newComp",
         _token: adminToken,
       });
     expect(resp.statusCode).toEqual(400);
@@ -198,7 +197,7 @@ describe("PATCH /jobs/:id", function () {
 
   test("fails on invalid data", async function () {
     const resp = await request(app)
-      .patch(`/jobs/${job1.id}`)
+      .patch(`/jobs/${jobs[0].id}`)
       .send({
         title: 5,
         _token: adminToken,
@@ -211,7 +210,7 @@ describe("PATCH /jobs/:id", function () {
 describe("DELETE /jobs/:id", function () {
   test("user can't delete job if not admin", async function () {
     const resp = await request(app)
-      .delete(`/jobs/${job1.id}`)
+      .delete(`/jobs/${jobs[0].id}`)
       .send({
         _token: u1Token,
       });
@@ -220,17 +219,16 @@ describe("DELETE /jobs/:id", function () {
 
   test("Admin can delete job", async function () {
     const resp = await request(app)
-      .delete(`/jobs/${job1.id}`)
+      .delete(`/jobs/${jobs[0].id}`)
       .send({
         _token: adminToken,
       });
-    expect(resp.body).toEqual({ deleted: "1" });
+    expect(resp.body).toEqual({ deleted: `${jobs[0].id}` });
   });
-
 
   test("fails for anon", async function () {
     const resp = await request(app)
-      .delete(`/jobs/${job1.id}`);
+      .delete(`/jobs/${jobs[0].id}`);
     expect(resp.statusCode).toEqual(401);
   });
 

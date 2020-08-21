@@ -15,10 +15,10 @@ class Company {
   static async findAll(nameLike, minEmployees, maxEmployees) {
     let companiesRes;
     if (nameLike || minEmployees || maxEmployees) {
-      
-      const {dbQuery, filterValues} = sqlForFilteringCompanies(nameLike, minEmployees, maxEmployees);
+
+      const { dbQuery, filterValues } = sqlForFilteringCompanies(nameLike, minEmployees, maxEmployees);
       companiesRes = await db.query(dbQuery, filterValues);
-      
+
     } else {
       companiesRes = await db.query(
         `SELECT handle, name
@@ -42,9 +42,17 @@ class Company {
            WHERE handle = $1`,
       [handle]);
 
+    const jobsRes = await db.query(
+      `SELECT id, title, salary, equity, company_handle
+        FROM jobs
+        WHERE company_handle = $1`,
+      [handle]);
+
     const company = companyRes.rows[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
+
+    company.jobs = jobsRes.rows;
 
     return company;
   }

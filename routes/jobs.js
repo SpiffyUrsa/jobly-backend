@@ -33,11 +33,11 @@ router.get("/", async function (req, res, next) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
-    
+
     const { title, minSalary, hasEquity } = req.query;
 
     const jobs = await Job.findAll(title, minSalary, hasEquity);
-    
+
     return res.json({ jobs });
   } catch (err) {
     return next(err);
@@ -46,16 +46,15 @@ router.get("/", async function (req, res, next) {
 
 /** GET /[id]  =>  { job }
  *
- *  Job is { id, name, num_employees, description, logo_url, jobs }
- *   where jobs is [{ id, title, salary, equity, company_handle }, ...]
- *
+ *  job is { id, title, salary, equity, company_handle }
+ *  
  * Authorization required: none
  **/
 
 router.get("/:id", async function (req, res, next) {
   try {
-    const company = await Job.get(req.params.id);
-    return res.json({ company });
+    const job = await Job.get(req.params.id);
+    return res.json({ job });
   } catch (err) {
     return next(err);
   }
@@ -118,7 +117,7 @@ router.patch("/:id", ensureAdmin, async function (req, res, next) {
  **/
 router.delete("/:id", ensureAdmin, async function (req, res, next) {
   try {
-    await Company.remove(req.params.id);
+    await Job.remove(req.params.id);
     return res.json({ deleted: req.params.id });
   } catch (err) {
     return next(err);

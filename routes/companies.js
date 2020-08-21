@@ -33,11 +33,11 @@ router.get("/", async function (req, res, next) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
-    
+
     const { nameLike, minEmployees, maxEmployees } = req.query;
 
     const companies = await Company.findAll(nameLike, minEmployees, maxEmployees);
-    
+
     return res.json({ companies });
   } catch (err) {
     return next(err);
@@ -51,7 +51,7 @@ router.get("/", async function (req, res, next) {
  *
  * Authorization required: none
  **/
-//TODO: What about jobs?
+
 router.get("/:handle", async function (req, res, next) {
   try {
     const company = await Company.get(req.params.handle);
@@ -70,10 +70,10 @@ router.get("/:handle", async function (req, res, next) {
  * Authorization required: admin
  **/
 
-//TODO: only admin can make create company
+
 router.post("/", ensureAdmin, async function (req, res, next) {
   try {
-    console.log("inside create route")
+
     const validator = jsonschema.validate(req.body, companyNewSchema);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
@@ -97,7 +97,6 @@ router.post("/", ensureAdmin, async function (req, res, next) {
  *
  * Authorization required: admin
  **/
-//TODO: only admin can edit  company
 
 router.patch("/:handle", ensureAdmin, async function (req, res, next) {
   try {
@@ -118,7 +117,7 @@ router.patch("/:handle", ensureAdmin, async function (req, res, next) {
  *
  * Authorization: admin
  **/
-//TODO: only admin can delete company
+
 router.delete("/:handle", ensureAdmin, async function (req, res, next) {
   try {
     await Company.remove(req.params.handle);
@@ -128,5 +127,4 @@ router.delete("/:handle", ensureAdmin, async function (req, res, next) {
   }
 });
 
-//TODO: ensureLOGGEDIN
 module.exports = router;

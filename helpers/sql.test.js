@@ -79,7 +79,7 @@ describe("sqlForFilteringJobs", function () {
     const result = sqlForFilteringJobs("test", 100000);
 
     expect(result).toEqual({
-      dbQuery: `SELECT id, title, salary, equity 
+      dbQuery: `SELECT id, title, salary, equity, company_handle 
                   FROM jobs 
                   WHERE title ILIKE $1 AND salary >= $2 ORDER BY title`,
       filterValues: ["%test%", 100000]
@@ -90,7 +90,7 @@ describe("sqlForFilteringJobs", function () {
     const result = sqlForFilteringJobs(undefined, 100000, false);
 
     expect(result).toEqual({
-      dbQuery: `SELECT id, title, salary, equity 
+      dbQuery: `SELECT id, title, salary, equity, company_handle 
                   FROM jobs 
                   WHERE salary >= $1 ORDER BY title`,
       filterValues: [100000]
@@ -101,7 +101,7 @@ describe("sqlForFilteringJobs", function () {
     const result = sqlForFilteringJobs(undefined, 100000, true);
 
     expect(result).toEqual({
-      dbQuery: `SELECT id, title, salary, equity 
+      dbQuery: `SELECT id, title, salary, equity, company_handle 
                   FROM jobs 
                   WHERE salary >= $1 AND equity > 0 ORDER BY title`,
       filterValues: [100000]
@@ -112,7 +112,7 @@ describe("sqlForFilteringJobs", function () {
     const result = sqlForFilteringJobs("test", 100000, true);
 
     expect(result).toEqual({
-      dbQuery: `SELECT id, title, salary, equity 
+      dbQuery: `SELECT id, title, salary, equity, company_handle 
                   FROM jobs 
                   WHERE title ILIKE $1 AND salary >= $2 AND equity > 0 ORDER BY title`,
       filterValues: ["%test%", 100000]

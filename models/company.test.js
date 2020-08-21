@@ -16,7 +16,7 @@ afterAll(commonAfterAll);
 
 
 describe("findAll", function () {
-  
+
   test("all", async function () {
     let companies = await Company.findAll();
     expect(companies).toEqual([
@@ -45,16 +45,16 @@ describe("findAll", function () {
 
   test("filter by values where nothing is matched.", async function () {
     let companies = await Company.findAll("ABCD");
-    
+
     expect(companies).toEqual([]);
   });
 
   test("Throws error when the minEmployees is greater than the maxEmployees", async function () {
 
-   
+
     await expect(Company.findAll(undefined, 3, 2))
-				.rejects 
-				.toThrow("Bad Request: minEmployees is greater than maxEmployees.");
+      .rejects
+      .toThrow("Bad Request: minEmployees is greater than maxEmployees.");
   })
 
 
@@ -70,6 +70,7 @@ describe("get", function () {
       num_employees: 1,
       description: "Desc1",
       logo_url: "http://c1.img",
+      jobs: company.jobs
     });
   });
 
@@ -84,7 +85,7 @@ describe("get", function () {
 });
 
 describe("create", function () {
-  
+
   test("succeeds", async function () {
     let company = await Company.create({
       handle: "test",
@@ -183,7 +184,7 @@ describe("remove", function () {
   test("succeeds", async function () {
     await Company.remove("c1");
     const res = await db.query(
-        "SELECT * FROM companies WHERE handle=$1", ["c1"]);
+      "SELECT * FROM companies WHERE handle=$1", ["c1"]);
     expect(res.rows.length).toEqual(0);
   });
 
