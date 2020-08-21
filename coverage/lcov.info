@@ -109,7 +109,7 @@ TN:
 SF:helpers/sql.js
 FN:10,sqlForPartialUpdate
 FN:12,(anonymous_1)
-FN:25,sqlForFilteringByCols
+FN:25,sqlForFilteringCompanies
 FN:37,(anonymous_3)
 FN:39,(anonymous_4)
 FN:53,(anonymous_5)
@@ -117,7 +117,7 @@ FNF:6
 FNH:6
 FNDA:5,sqlForPartialUpdate
 FNDA:5,(anonymous_1)
-FNDA:5,sqlForFilteringByCols
+FNDA:5,sqlForFilteringCompanies
 FNDA:12,(anonymous_3)
 FNDA:6,(anonymous_4)
 FNDA:6,(anonymous_5)

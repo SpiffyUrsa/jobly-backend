@@ -225,7 +225,7 @@ function sqlForPartialUpdate(dataToUpdate) {
  *  With a query string containing the filtering parameters and the values of the filters.
  */
 &nbsp;
-function sqlForFilteringByCols(nameLike, minEmployees, maxEmployees) {
+function sqlForFilteringCompanies(nameLike, minEmployees, maxEmployees) {
   
   if (minEmployees &gt; maxEmployees) {
     throw new BadRequestError("Bad Request: minEmployees is greater than maxEmployees.");
@@ -270,7 +270,7 @@ function sqlForFilteringByCols(nameLike, minEmployees, maxEmployees) {
 &nbsp;
 &nbsp;
 &nbsp;
-module.exports = { sqlForPartialUpdate, sqlForFilteringByCols };
+module.exports = { sqlForPartialUpdate, sqlForFilteringCompanies };
 &nbsp;
 &nbsp;
 &nbsp;</pre></td></tr></table></pre>

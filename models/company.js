@@ -2,7 +2,7 @@
 
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { sqlForPartialUpdate, sqlForFilteringByCols } = require("../helpers/sql");
+const { sqlForPartialUpdate, sqlForFilteringCompanies } = require("../helpers/sql");
 
 /** Related functions for companies. */
 
@@ -16,7 +16,7 @@ class Company {
     let companiesRes;
     if (nameLike || minEmployees || maxEmployees) {
       
-      const {dbQuery, filterValues} = sqlForFilteringByCols(nameLike, minEmployees, maxEmployees);
+      const {dbQuery, filterValues} = sqlForFilteringCompanies(nameLike, minEmployees, maxEmployees);
       companiesRes = await db.query(dbQuery, filterValues);
       
     } else {
