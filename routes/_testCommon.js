@@ -3,6 +3,7 @@
 const db = require("../db.js");
 const User = require("../models/User");
 const Company = require("../models/Company");
+const Job = require("../models/Job");
 const { createToken } = require("../helpers/tokens");
 
 async function commonBeforeAll() {
@@ -12,11 +13,19 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM companies");
 
   await Company.create(
-      { handle: "c1", name: "C1", num_employees: 1, description: "Desc1" });
+    { handle: "c1", name: "C1", num_employees: 1, description: "Desc1" });
   await Company.create(
-      { handle: "c2", name: "C2", num_employees: 2, description: "Desc2" });
+    { handle: "c2", name: "C2", num_employees: 2, description: "Desc2" });
   await Company.create(
-      { handle: "c3", name: "C3", num_employees: 3, description: "Desc3" });
+    { handle: "c3", name: "C3", num_employees: 3, description: "Desc3" });
+
+
+  await Job.create(
+    { title: "job1", salary: 10000, equity: 0.5, company_handle: "c1" });
+  await Job.create(
+    { title: "job2", salary: 11000, equity: 0.4, company_handle: "c2" });
+  await Job.create(
+    { title: "job3", salary: 12000, equity: 0.3, company_handle: "c3" });
 
   await User.register({
     username: "u1",
