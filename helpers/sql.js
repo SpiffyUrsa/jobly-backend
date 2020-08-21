@@ -73,41 +73,30 @@ function sqlForFilteringCompanies(nameLike, minEmployees, maxEmployees) {
  * optional and returns an object with a query string containing the filtering parameters 
  * and the values of the filters for jobs.
  */
-function sqlForFilteringJobs(title, minSalary, hasEquity) {
+function sqlForFilteringJobs(reqQueries) {
 
-  let filtersNameAndVals = [
-    ["title", title],
-    ["minSalary", minSalary],
-    ["hasEquity", hasEquity]
-  ];
+  if (reqQueries.hasEquity !== undefined && reqQueries.hasEquity === false) {
+    delete reqQueries.hasEquity;
+  }
 
-  filtersNameAndVals = filtersNameAndVals.filter(filter => (filter[1] !== undefined) && filter[1]);
+  let filtersQueries = [];
+  let filterValues = [];
+  let i = 0;
 
-  let filtersQueries = filtersNameAndVals.map((filter, ind) => {
-    let filterName = filter[0];
-
-    if (filterName === "title") {
-      return `title ILIKE $${ind + 1}`;
-    } else if (filterName === "minSalary") {
-      return `salary >= $${ind + 1}`;
-    } else if (filterName === "hasEquity") {
-      return `equity > 0`;
+  for (let key in reqQueries) {
+    if (key === "title") {
+        filtersQueries.push(`title ILIKE $${i + 1}`);
+        i++;
+        filterValues.push("%" + reqQueries[key] + "%");
+        
+    } else if (key === "minSalary") {
+        filtersQueries.push(`salary >= $${i +=1}`);
+        i++;
+        filterValues.push(reqQueries[key]);
+        
+    } else if (key === "hasEquity") {
+        filtersQueries.push(`equity > 0`);
     }
-  });
-
-  let filterValues = filtersNameAndVals.map(filter => {
-    let name = filter[0]
-    let value = filter[1]
-
-    if (name === "title") {
-      value = "%" + value + "%";
-    }
-    return value
-  });
-
-  let hasEquityIdx = filterValues.indexOf(true);
-  if (hasEquityIdx !== -1) {
-    filterValues.splice(hasEquityIdx, 1);
   }
 
   let combinedFiltersQuery = filtersQueries.join(" AND ");
@@ -115,8 +104,10 @@ function sqlForFilteringJobs(title, minSalary, hasEquity) {
   let dbQuery = `SELECT id, title, salary, equity, company_handle 
                   FROM jobs 
                   WHERE ` + combinedFiltersQuery + " ORDER BY title";
+
   return { dbQuery, filterValues };
 }
+
 
 
 

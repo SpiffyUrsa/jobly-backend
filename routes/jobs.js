@@ -34,9 +34,7 @@ router.get("/", async function (req, res, next) {
       throw new BadRequestError(errs);
     }
 
-    const { title, minSalary, hasEquity } = req.query;
-
-    const jobs = await Job.findAll(title, minSalary, hasEquity);
+    const jobs = await Job.findAll(req.query);
 
     return res.json({ jobs });
   } catch (err) {

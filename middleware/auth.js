@@ -63,7 +63,8 @@ function ensureLoggedIn(req, res, next) {
 function ensureAdmin(req, res, next) {
   try {
     _ensureLoggedIn(req, res)
-    if (res.locals.user.is_admin === true) {
+    
+    if (res.locals.user && res.locals.user.is_admin === true) {
       return next()
     } else {
       throw new UnauthorizedError()

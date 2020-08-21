@@ -76,7 +76,7 @@ describe("sqlForFilteringCompanies", function () {
 
 describe("sqlForFilteringJobs", function () {
   test("test the query with inputs-title and minSalary", function () {
-    const result = sqlForFilteringJobs("test", 100000);
+    const result = sqlForFilteringJobs({title: "test", minSalary: 100000});
 
     expect(result).toEqual({
       dbQuery: `SELECT id, title, salary, equity, company_handle 
@@ -87,7 +87,7 @@ describe("sqlForFilteringJobs", function () {
   });
 
   test("test the query with only input-minSalary and hasEquity as false.", function () {
-    const result = sqlForFilteringJobs(undefined, 100000, false);
+    const result = sqlForFilteringJobs({minSalary: 100000, hasEquity: false});
 
     expect(result).toEqual({
       dbQuery: `SELECT id, title, salary, equity, company_handle 
@@ -98,7 +98,7 @@ describe("sqlForFilteringJobs", function () {
   });
 
   test("test the query with inputs-minSalary and hasEquity as true.", function () {
-    const result = sqlForFilteringJobs(undefined, 100000, true);
+    const result = sqlForFilteringJobs({minSalary: 100000, hasEquity: true});
 
     expect(result).toEqual({
       dbQuery: `SELECT id, title, salary, equity, company_handle 
@@ -109,7 +109,7 @@ describe("sqlForFilteringJobs", function () {
   });
 
   test("test the query with inputs-title, minSalary, and hasEquity as true.", function () {
-    const result = sqlForFilteringJobs("test", 100000, true);
+    const result = sqlForFilteringJobs({title: "test", minSalary: 100000, hasEquity: true});
 
     expect(result).toEqual({
       dbQuery: `SELECT id, title, salary, equity, company_handle 

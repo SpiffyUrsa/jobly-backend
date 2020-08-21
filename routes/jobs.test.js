@@ -80,6 +80,8 @@ describe("POST /jobs", function () {
     expect(resp.statusCode).toEqual(400);
   });
 
+  // Test to see if we get certain error messages. 
+
   test("fails with invalid data", async function () {
     const resp = await request(app)
       .post("/jobs")

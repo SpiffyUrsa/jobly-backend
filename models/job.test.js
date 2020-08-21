@@ -30,7 +30,7 @@ describe("findAll", function () {
 
 
 	test("filter by the title containing 1 inside of it.", async function () {
-		let jobs = await Job.findAll("1");
+		let jobs = await Job.findAll({title: "1"});
 
 		expect(jobs).toEqual([
 			{ id: 1, title: "job1", salary: 10000, equity: "0.5", company_handle: "c1" }
@@ -38,7 +38,7 @@ describe("findAll", function () {
 	});
 
 	test("filter by name containing job and having minSalary of 11000.", async function () {
-		let jobs = await Job.findAll("job", 11000);
+		let jobs = await Job.findAll({title: "job",minSalary: 11000});
 
 		expect(jobs).toEqual([
 			{ id: 2, title: "job2", salary: 11000, equity: "0.3141592653", company_handle: "c2" },
@@ -47,7 +47,7 @@ describe("findAll", function () {
 	});
 
 	test("filter by values where nothing is matched.", async function () {
-		let jobs = await Job.findAll("ABCD");
+		let jobs = await Job.findAll({title:"ABCD"});
 
 		expect(jobs).toEqual([]);
 	});

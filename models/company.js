@@ -14,6 +14,7 @@ class Company {
 
   static async findAll(nameLike, minEmployees, maxEmployees) {
     let companiesRes;
+    // takes an object and check if the keys exist.
     if (nameLike || minEmployees || maxEmployees) {
 
       const { dbQuery, filterValues } = sqlForFilteringCompanies(nameLike, minEmployees, maxEmployees);
