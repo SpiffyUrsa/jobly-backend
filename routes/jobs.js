@@ -9,124 +9,119 @@ const { BadRequestError } = require("../expressError");
 const { ensureLoggedIn, ensureAdmin } = require("../middleware/auth");
 const Job = require("../models/Job");
 
-const companyNewSchema = require("../schemas/companyNew.json");
-const companyUpdateSchema = require("../schemas/companyUpdate.json");
-const getCompaniesSchema = require("../schemas/getCompanies.json")
+const jobNewSchema = require("../schemas/jobNew.json");
+const jobUpdateSchema = require("../schemas/jobUpdate.json");
+const getJobsSchema = require("../schemas/getJobs.json")
 
 const router = new express.Router();
 
-/** GET /  =>  { companies: [{ handle, name }, ...] }
+/** GET /  =>  { Jobs: [{ id, title, salary, equity, company_handle }, ...] }
  *
  * Can filter on provided search filters:
- * - minEmployees
- * - maxEmployees
- * - nameLike (will find case-insensitive, partial matches)
+ * - title
+ * - minSalary
+ * - hasEquity (will find case-insensitive, partial matches)
  *
  * Authorization required: none
  **/
 
 router.get("/", async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, getCompaniesSchema);
+    const validator = jsonschema.validate(req.body, getJobsSchema);
 
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
     
-    const { nameLike, minEmployees, maxEmployees } = req.query;
+    const { title, minSalary, hasEquity } = req.query;
 
-    const companies = await Company.findAll(nameLike, minEmployees, maxEmployees);
+    const jobs = await Job.findAll(title, minSalary, hasEquity);
     
-    return res.json({ companies });
+    return res.json({ jobs });
   } catch (err) {
     return next(err);
   }
 });
 
-/** GET /[handle]  =>  { company }
+/** GET /[id]  =>  { job }
  *
- *  Company is { handle, name, num_employees, description, logo_url, jobs }
- *   where jobs is [{ id, title, salary, equity }, ...]
+ *  Job is { id, name, num_employees, description, logo_url, jobs }
+ *   where jobs is [{ id, title, salary, equity, company_handle }, ...]
  *
  * Authorization required: none
  **/
-//TODO: What about jobs?
-router.get("/:handle", async function (req, res, next) {
+
+router.get("/:id", async function (req, res, next) {
   try {
-    const company = await Company.get(req.params.handle);
+    const company = await Job.get(req.params.id);
     return res.json({ company });
   } catch (err) {
     return next(err);
   }
 });
 
-/** POST / { company } =>  { company }
+/** POST / { job } =>  { job }
  *
- * company should be { handle, name, num_employees, description, logo_url }
+ * job should be {title, salary, equity, company_handle}
  *
- * Returns { handle, name, num_employees, description, logo_url }
+ * Returns { id, title, salary, equity, company_handle }
  *
  * Authorization required: admin
  **/
 
-//TODO: only admin can make create company
 router.post("/", ensureAdmin, async function (req, res, next) {
   try {
-    console.log("inside create route")
-    const validator = jsonschema.validate(req.body, companyNewSchema);
+    const validator = jsonschema.validate(req.body, jobNewSchema);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
 
-    const company = await Company.create(req.body);
-    return res.status(201).json({ company });
+    const job = await Job.create(req.body);
+    return res.status(201).json({ job });
   } catch (err) {
     return next(err);
   }
 });
 
-/** PATCH /[handle] { fld1, fld2, ... } => { company }
+/** PATCH /[id] { title, salary, equity } => { job }
  *
- * Patches company data.
+ * Patches job data.
  *
- * fields can be: {name, num_employees, description, logo_url}
+ * fields can be: {title, salary, equity}
  *
- * Returns {handle, name, num_employees, description, logo_url}
- *
+ * Returns {id, title, salary, equity, company_handle }
+ * 
+ * Id and company_handle can't be updated
  * Authorization required: admin
  **/
-//TODO: only admin can edit  company
 
-router.patch("/:handle", ensureAdmin, async function (req, res, next) {
+router.patch("/:id", ensureAdmin, async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, companyUpdateSchema);
+    const validator = jsonschema.validate(req.body, jobUpdateSchema);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
 
-    const company = await Company.update(req.params.handle, req.body);
-    return res.json({ company });
+    const job = await Job.update(req.params.id, req.body);
+    return res.json({ job });
   } catch (err) {
     return next(err);
   }
 });
 
-/** DELETE /[handle]  =>  { deleted: handle }
+/** DELETE /[id]  =>  { deleted: id }
  *
  * Authorization: admin
  **/
-//TODO: only admin can delete company
-router.delete("/:handle", ensureAdmin, async function (req, res, next) {
+router.delete("/:id", ensureAdmin, async function (req, res, next) {
   try {
-    await Company.remove(req.params.handle);
-    return res.json({ deleted: req.params.handle });
+    await Company.remove(req.params.id);
+    return res.json({ deleted: req.params.id });
   } catch (err) {
     return next(err);
   }
 });
-
-//TODO: ensureLOGGEDIN
 module.exports = router;
