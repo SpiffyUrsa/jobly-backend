@@ -156,7 +156,7 @@ describe("PATCH /companies/:handle", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("user cannot update company if not admin", async function () {
+  test("admin can update company", async function () {
     const resp = await request(app)
       .patch(`/companies/c1`)
       .send({
